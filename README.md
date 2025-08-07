@@ -1,10 +1,10 @@
-# Bid2Drive
+# CleanArchitecture
 
 This is a vehicle rental platform where users can bid and rent vehicles.
 
 ## Project Overview
 
-Bid2Drive is a full-stack application built with:
+CleanArchitecture is a full-stack application built with:
 - **Backend:** ASP.NET Core (C#) following Clean Architecture principles, utilizing CQRS with MediatR, Entity Framework Core for data access, and ASP.NET Core Identity for authentication (including JWT, Google, and Facebook external logins). Serilog is used for structured logging to files.
 - **Frontend:** (To be implemented, likely Next.js)
 
@@ -19,7 +19,7 @@ This project can be easily set up and run using Docker Compose.
 
 1.  **Navigate to the project root:**
     ```bash
-    cd D:\Work\VehicleRentalPlatform\Bid2Drive
+    cd D:\Work\VehicleRentalPlatform\CleanArchitecture
     ```
 
 2.  **Build and run the Docker containers:**
@@ -27,12 +27,12 @@ This project can be easily set up and run using Docker Compose.
     docker-compose up --build
     ```
     This command will:
-    -   Build the Docker images for the SQL Server and the Bid2Drive API.
+    -   Build the Docker images for the SQL Server and the CleanArchitecture API.
     -   Start the SQL Server container.
-    -   Start the Bid2Drive API container, which will automatically apply database migrations and seed initial user data (SuperAdmin, Admin, Customer, Driver roles and users).
+    -   Start the CleanArchitecture API container, which will automatically apply database migrations and seed initial user data (SuperAdmin, Admin, Customer, Driver roles and users).
 
 3.  **Access the API:**
-    Once the containers are up and running, the Bid2Drive API will be accessible at `http://localhost:8080` (HTTP) and `https://localhost:8081` (HTTPS).
+    Once the containers are up and running, the CleanArchitecture API will be accessible at `http://localhost:8080` (HTTP) and `https://localhost:8081` (HTTPS).
     You can access the Swagger UI for API documentation and testing at `http://localhost:8080/swagger` or `https://localhost:8081/swagger`.
 
 4.  **Stop the containers:**
@@ -42,4 +42,4 @@ This project can be easily set up and run using Docker Compose.
     ```
 
 **Note on External Authentication:**
-For Google and Facebook login to work, you need to replace the placeholder `YOUR_GOOGLE_CLIENT_ID`, `YOUR_GOOGLE_CLIENT_SECRET`, `YOUR_FACEBOOK_APP_ID`, and `YOUR_FACEBOOK_APP_SECRET` in `Backend/Bid2Drive.Api/appsettings.json` with your actual credentials obtained from Google and Facebook developer consoles.
+For Google and Facebook login to work, you need to replace the placeholder `YOUR_GOOGLE_CLIENT_ID`, `YOUR_GOOGLE_CLIENT_SECRET`, `YOUR_FACEBOOK_APP_ID`, and `YOUR_FACEBOOK_APP_SECRET` in `Backend/CleanArchitecture.Api/appsettings.json` with your actual credentials obtained from Google and Facebook developer consoles.
