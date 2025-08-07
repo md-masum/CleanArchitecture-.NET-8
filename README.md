@@ -1,45 +1,90 @@
 # CleanArchitecture
 
-This is a vehicle rental platform where users can bid and rent vehicles.
+A starter template for building robust ASP.NET Core applications following Clean Architecture principles, with complete authentication and authorization implemented out of the box.
 
-## Project Overview
+## Overview
 
-CleanArchitecture is a full-stack application built with:
-- **Backend:** ASP.NET Core (C#) following Clean Architecture principles, utilizing CQRS with MediatR, Entity Framework Core for data access, and ASP.NET Core Identity for authentication (including JWT, Google, and Facebook external logins). Serilog is used for structured logging to files.
-- **Frontend:** (To be implemented, likely Next.js)
+This template provides a scalable project structure built using:
+- **Backend:** ASP.NET Core 8 (C#)
+  - Clean Architecture pattern
+  - CQRS using MediatR
+  - Entity Framework Core
+  - ASP.NET Core Identity with:
+    - JWT Authentication
+    - Google and Facebook external login support
+  - Serilog for structured file logging
 
-## Running with Docker
+- **Frontend:** *(Not included; recommended to use with Next.js or any modern SPA framework)*
 
-This project can be easily set up and run using Docker Compose.
+---
 
-**Prerequisites:**
-- Docker Desktop (or Docker Engine) installed and running on your system.
+## Getting Started with Docker
 
-**Steps:**
+This project is Docker-ready for quick local development and testing.
 
-1.  **Navigate to the project root:**
-    ```bash
-    cd D:\Work\VehicleRentalPlatform\CleanArchitecture
-    ```
+### Prerequisites
+- Docker Desktop (or Docker Engine) installed and running
 
-2.  **Build and run the Docker containers:**
-    ```bash
-    docker-compose up --build
-    ```
-    This command will:
-    -   Build the Docker images for the SQL Server and the CleanArchitecture API.
-    -   Start the SQL Server container.
-    -   Start the CleanArchitecture API container, which will automatically apply database migrations and seed initial user data (SuperAdmin, Admin, Customer, Driver roles and users).
+### Steps
 
-3.  **Access the API:**
-    Once the containers are up and running, the CleanArchitecture API will be accessible at `http://localhost:8080` (HTTP) and `https://localhost:8081` (HTTPS).
-    You can access the Swagger UI for API documentation and testing at `http://localhost:8080/swagger` or `https://localhost:8081/swagger`.
+1. **Navigate to the project root:**
+   ```bash
+   cd D:\Work\CleanArchitecture
+   ```
 
-4.  **Stop the containers:**
-    To stop and remove the containers, networks, and volumes created by `docker-compose up`, run:
-    ```bash
-    docker-compose down
-    ```
+2. **Build and run the Docker containers:**
+   ```bash
+   docker-compose up --build
+   ```
+   This will:
+   - Build Docker images for SQL Server and the API
+   - Start the SQL Server container
+   - Start the API container and:
+     - Apply EF Core migrations
+     - Seed default roles and users (SuperAdmin, Admin, Customer, Driver)
 
-**Note on External Authentication:**
-For Google and Facebook login to work, you need to replace the placeholder `YOUR_GOOGLE_CLIENT_ID`, `YOUR_GOOGLE_CLIENT_SECRET`, `YOUR_FACEBOOK_APP_ID`, and `YOUR_FACEBOOK_APP_SECRET` in `Backend/CleanArchitecture.Api/appsettings.json` with your actual credentials obtained from Google and Facebook developer consoles.
+3. **Access the API:**
+   - HTTP: `http://localhost:8080`
+   - HTTPS: `https://localhost:8081`
+   - Swagger UI:  
+     - `http://localhost:8080/swagger`  
+     - `https://localhost:8081/swagger`
+
+4. **Stop the containers:**
+   ```bash
+   docker-compose down
+   ```
+
+---
+
+## External Authentication Setup
+
+To enable Google and Facebook login, update the following placeholders in `Backend/CleanArchitecture.Api/appsettings.json`:
+
+```json
+"Google": {
+  "ClientId": "YOUR_GOOGLE_CLIENT_ID",
+  "ClientSecret": "YOUR_GOOGLE_CLIENT_SECRET"
+},
+"Facebook": {
+  "AppId": "YOUR_FACEBOOK_APP_ID",
+  "AppSecret": "YOUR_FACEBOOK_APP_SECRET"
+}
+```
+
+Obtain credentials from the respective developer consoles:
+
+- [Google Developer Console](https://console.developers.google.com)
+- [Facebook Developer Console](https://developers.facebook.com)
+
+---
+
+## Features Included
+
+- ✅ Modular Clean Architecture structure
+- ✅ Built-in role-based authentication and authorization
+- ✅ JWT, Google, and Facebook authentication
+- ✅ Docker support with pre-configured SQL Server
+- ✅ EF Core migrations and seeding
+- ✅ Swagger UI for API testing
+- ✅ Serilog file logging
