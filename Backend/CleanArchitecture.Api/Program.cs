@@ -1,10 +1,10 @@
-using System.Text;
 using CleanArchitecture.Api.Extensions;
 using CleanArchitecture.Api.Middlewares;
 using CleanArchitecture.Api.Services;
 using CleanArchitecture.Application.Common.Wrappers;
 using CleanArchitecture.Application.Interfaces.Services;
 using CleanArchitecture.Application.IoC;
+using CleanArchitecture.Domain.Settings;
 using CleanArchitecture.Infrastructure.Context;
 using CleanArchitecture.Infrastructure.IoC;
 using CleanArchitecture.Infrastructure.Models;
@@ -12,9 +12,12 @@ using CleanArchitecture.Infrastructure.Persistence;
 using CleanArchitecture.Infrastructure.Shared.IoC;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Serilog;
+using System.Text;
+using CleanArchitecture.Infrastructure.Shared.Services;
 
 namespace CleanArchitecture.Api
 {
@@ -65,27 +68,37 @@ namespace CleanArchitecture.Api
                     };
                     o.Events = new JwtBearerEvents()
                     {
-                        OnAuthenticationFailed = c =>
+                        OnAuthenticationFailed = context =>
                         {
-                            c.NoResult();
-                            c.Response.StatusCode = 500;
-                            c.Response.ContentType = "text/plain";
-                            return c.Response.WriteAsync(c.Exception.ToString());
-                        },
-                        OnChallenge = context =>
-                        {
-                            context.HandleResponse();
                             context.Response.StatusCode = 401;
                             context.Response.ContentType = "application/json";
                             var result = JsonConvert.SerializeObject(new Response<string>("You are not Authorized"));
                             return context.Response.WriteAsync(result);
                         },
+                        OnChallenge = context =>
+                        {
+                            if (!context.Response.HasStarted)
+                            {
+                                context.HandleResponse();
+                                context.Response.StatusCode = 401;
+                                context.Response.ContentType = "application/json";
+                                var result = JsonConvert.SerializeObject(new Response<string>("You are not Authorized"));
+                                return context.Response.WriteAsync(result);
+                            }
+
+                            return Task.CompletedTask;
+                        },
                         OnForbidden = context =>
                         {
-                            context.Response.StatusCode = 403;
-                            context.Response.ContentType = "application/json";
-                            var result = JsonConvert.SerializeObject(new Response<string>("You are not authorized to access this resource"));
-                            return context.Response.WriteAsync(result);
+                            if (!context.Response.HasStarted)
+                            {
+                                context.Response.StatusCode = 403;
+                                context.Response.ContentType = "application/json";
+                                var result = JsonConvert.SerializeObject(new Response<string>("You are not authorized to access this resource"));
+                                return context.Response.WriteAsync(result);
+                            }
+
+                            return Task.CompletedTask;
                         },
                     };
                 })
@@ -110,7 +123,29 @@ namespace CleanArchitecture.Api
                 });
             });
 
+            // Configure Redis cache
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                var redisConfig = builder.Configuration.GetSection("Redis");
+                options.Configuration = redisConfig.GetValue<string>("ConnectionString");
+                options.InstanceName = redisConfig.GetValue<string>("InstanceName");
+            });
+
+            builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
+
             var app = builder.Build();
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.OnStarting(() =>
+                {
+                    Console.WriteLine("Response started for: " + context.Request.Path);
+                    return Task.CompletedTask;
+                });
+
+                await next();
+            });
+
 
             // Database seeding
             using (var scope = app.Services.CreateScope())
@@ -137,16 +172,16 @@ namespace CleanArchitecture.Api
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseMiddleware<ErrorHandlerMiddleware>();
+
             // Register Serilog request logging middleware
             app.UseSerilogRequestLogging();
-
-            app.UseMiddleware<ErrorHandlerMiddleware>();
+            app.UseErrorHandlingMiddleware();
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerExtension();
             app.UseHealthChecks("/health");
             app.UseCors("AllowAll");
 

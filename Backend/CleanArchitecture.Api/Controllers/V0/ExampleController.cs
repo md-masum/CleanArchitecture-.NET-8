@@ -12,42 +12,13 @@ namespace CleanArchitecture.Api.Controllers.V0
         [HttpGet]
         public async Task<IActionResult> GetAllExample([FromQuery] GetAllExampleParams exampleParams)
         {
-            return Ok(await Mediator.Send(new GetAllExampleQuery(exampleParams.PageNumber, exampleParams.PageSize)));
+            return Ok("this is old api");
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetExampleById(int id)
         {
-            var result = await Mediator.Send(new GetExampleByIdQuery(id));
-            return Ok(result.Data);
+            return Ok("old api data");
         }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateExample(CreateExampleCommand command)
-        {
-            var result = await Mediator.Send(command);
-            return Ok(result.Data);
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> UpdateExample(int id, UpdateExampleCommand command)
-        {
-            if (id != command.Id)
-            {
-                return BadRequest();
-            }
-
-            var result = await Mediator.Send(command);
-            return Ok(result.Data);
-        }
-
-        [HttpDelete]
-        public async Task<IActionResult> DeleteExample(int id)
-        {
-            var result = await Mediator.Send(new DeleteExampleCommand(id));
-            return Ok(result.Data);
-        }
-
-
     }
 }
